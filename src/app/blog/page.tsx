@@ -173,11 +173,9 @@ export default function Blog() {
       {activeCategory === 'all' && featured && (
         <section style={{ padding: '3rem 2rem 0', background: 'var(--cream)' }}>
           <div
-            style={{
+            className="grid-hero" style={{
               borderRadius: 'var(--radius-lg)',
               overflow: 'hidden',
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
               border: '1.5px solid var(--blush)',
               background: 'var(--white)',
             }}
@@ -321,11 +319,7 @@ export default function Blog() {
         )}
 
         <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: '1.5rem',
-          }}
+          className="grid-3" 
         >
           {(activeCategory === 'all' ? ARTICLES.filter((a) => !a.featured) : filtered).map((article) => (
             <Link

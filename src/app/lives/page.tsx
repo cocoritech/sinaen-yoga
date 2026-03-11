@@ -238,11 +238,8 @@ export default function Lives() {
             return (
               <div
                 key={s.id}
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '120px 1fr auto',
+                className="grid-planning" style={{
                   alignItems: 'center',
-                  gap: '2rem',
                   padding: '1.5rem 2rem',
                   borderRadius: 'var(--radius-md)',
                   background: isReserved ? 'var(--blush)' : 'var(--white)',
@@ -396,11 +393,7 @@ export default function Lives() {
         </h2>
 
         <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: '1.5rem',
-          }}
+          className="grid-3" 
         >
           {REPLAYS.map((r) => (
             <Link

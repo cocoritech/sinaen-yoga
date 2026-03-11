@@ -8,11 +8,9 @@ export default function Home() {
 
       {/* ── HERO ──────────────────────────────────────────────────── */}
       <section
-        style={{
+        className="grid-hero" style={{
           minHeight: '100vh',
           background: 'var(--blush)',
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
           alignItems: 'end',
           padding: '0 2rem 3rem',
           paddingTop: '6rem',
@@ -183,11 +181,7 @@ export default function Home() {
         </h2>
 
         <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: '1.5rem',
-          }}
+          className="grid-3" 
         >
           {[
             {
@@ -305,10 +299,7 @@ export default function Home() {
         </h2>
 
         <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(2, 1fr)',
-            gap: '1.5rem',
+          className="grid-2" style={{
             marginTop: '6rem',
           }}
         >

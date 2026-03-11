@@ -13,14 +13,11 @@ export default function About() {
 
       {/* ── HERO ──────────────────────────────────────────────────── */}
       <section
-        style={{
+        className="grid-hero" style={{
           minHeight: '100vh',
           background: 'var(--cream)',
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
           alignItems: 'center',
           padding: '8rem 2rem 4rem',
-          gap: '4rem',
         }}
       >
         {/* Photo */}
@@ -161,11 +158,7 @@ export default function About() {
         </h2>
 
         <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: '2rem',
-          }}
+          className="grid-3" 
         >
           {[
             {
@@ -312,12 +305,9 @@ export default function About() {
 
       {/* ── B2B / CONTACT ─────────────────────────────────────────── */}
       <section
-        style={{
+        className="grid-hero" style={{
           padding: '6rem 2rem',
           background: 'var(--cream)',
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: '4rem',
           alignItems: 'center',
         }}
       >

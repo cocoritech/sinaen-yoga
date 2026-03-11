@@ -194,21 +194,15 @@ export default function Sounds() {
         </h2>
 
         <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(2, 1fr)',
-            gap: '1.5rem',
-          }}
+          className="grid-2" 
         >
           {PLAYLISTS.map((pl) => (
             <div
               key={pl.id}
-              style={{
+              className="grid-playlist" style={{
                 borderRadius: 'var(--radius-lg)',
                 overflow: 'hidden',
                 border: '1px solid rgba(255,210,217,0.1)',
-                display: 'grid',
-                gridTemplateColumns: '140px 1fr',
               }}
             >
               {/* Cover */}
@@ -312,11 +306,7 @@ export default function Sounds() {
         </h2>
 
         <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: '1rem',
-          }}
+          className="grid-3" 
         >
           {MEDITATIONS.map((m) => (
             <div

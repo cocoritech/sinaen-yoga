@@ -192,10 +192,7 @@ export default function Experiences() {
             >
               {/* Card principale */}
               <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '280px 1fr auto',
-                  gap: '2rem',
+                className="grid-event" style={{
                   alignItems: 'center',
                 }}
               >
