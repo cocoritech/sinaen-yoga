@@ -176,17 +176,17 @@ export default function About() {
             {
               year: '2018',
               title: 'Bali & Pilates',
-              desc: 'Formation pilates mat & réforme à Ubud. Découverte de l'approche holistique du corps et du breathwork.',
+              desc: "Formation pilates mat & réforme à Ubud. Découverte de l'approche holistique du corps et du breathwork.",
             },
             {
               year: '2020',
               title: 'Studio en ligne',
-              desc: 'Lancement de mes premiers cours en ligne. La communauté grandit, les pratiques s'approfondissent.',
+              desc: "Lancement de mes premiers cours en ligne. La communauté grandit, les pratiques s'approfondissent.",
             },
             {
               year: '2022',
               title: 'Lives & Retraites',
-              desc: 'Premier programme de retraites IRL. Des espaces de transformation collective, en France et à l'étranger.',
+              desc: "Premier programme de retraites IRL. Des espaces de transformation collective, en France et à l'étranger.",
             },
             {
               year: '2024',
@@ -287,11 +287,11 @@ export default function About() {
           }}
         >
           {[
-            'Le corps sait. Notre travail est de l'écouter, pas de le forcer.',
-            'Le mouvement n'est pas une punition. C'est un langage.',
-            'La régularité bat l'intensité. Toujours.',
-            'Bouger ensemble crée quelque chose qu'aucune vidéo ne peut reproduire.',
-            'Prendre soin de soi n'est pas un luxe. C'est une nécessité.',
+            "Le corps sait. Notre travail est de l'écouter, pas de le forcer.",
+            "Le mouvement n'est pas une punition. C'est un langage.",
+            "La régularité bat l'intensité. Toujours.",
+            "Bouger ensemble crée quelque chose qu'aucune vidéo ne peut reproduire.",
+            "Prendre soin de soi n'est pas un luxe. C'est une nécessité.",
           ].map((phrase, i) => (
             <p
               key={i}
