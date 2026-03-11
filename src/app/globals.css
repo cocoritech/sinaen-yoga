@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+/* ─── DESIGN TOKENS ─────────────────────────────────────────────── */
+:root {
+  /* Palette provisoire — holistique / naturel / lumineux
+     À remplacer par la palette officielle de Sinaen */
+  --color-sand:      #E8DDD0;   /* fond principal chaud */
+  --color-clay:      #C4A882;   /* accent terre */
+  --color-sage:      #8A9E85;   /* vert sauge / nature */
+  --color-deep:      #2C2A26;   /* texte principal */
+  --color-cream:     #F7F3EE;   /* fond secondaire */
+  --color-sun:       #D4A84B;   /* accent solaire / CTA */
+  --color-mist:      #BCC4C0;   /* gris vert neutre */
+  --color-white:     #FFFFFF;
+
+  /* Typographie */
+  --font-display:    'Perandory Condensed', Georgia, serif; /* logo + titres */
+  --font-body:       'Inter', system-ui, sans-serif;        /* corps de texte */
+
+  /* Spacing / radius */
+  --radius-sm:       4px;
+  --radius-md:       12px;
+  --radius-lg:       24px;
+  --radius-full:     9999px;
+}
+
+/* ─── BASE ──────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background-color: var(--color-cream);
+  color: var(--color-deep);
+  font-family: var(--font-body);
+  line-height: 1.6;
+}
+
+/* ─── TYPOGRAPHY SCALE ──────────────────────────────────────────── */
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+h1 { font-size: clamp(3rem, 8vw, 7rem); }
+h2 { font-size: clamp(2rem, 5vw, 4rem); }
+h3 { font-size: clamp(1.25rem, 3vw, 2rem); }
+
+p  { font-size: clamp(0.95rem, 1.5vw, 1.1rem); }
+
+/* ─── SCROLLBAR ─────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--color-cream); }
+::-webkit-scrollbar-thumb { background: var(--color-clay); border-radius: var(--radius-full); }
