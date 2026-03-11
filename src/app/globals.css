@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: 'Perandory Condensed';
+  src: url('/fonts/perandory-condensed.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* ─── PALETTE OFFICIELLE SINAEN ────────────────────────────────── */
 :root {
   --brique:       #741D28;
@@ -13,8 +21,7 @@
   --white:        #FFFFFF;
 
   /* Typographie */
-  --font-display: 'Perandory Condensed', Georgia, serif;
-  --font-body:    'Inter', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
 
   /* Radius */
   --radius-sm:    6px;
@@ -44,7 +51,7 @@ body {
 
 /* ─── TYPOGRAPHY SCALE ──────────────────────────────────────────── */
 h1, h2, h3 {
-  font-family: var(--font-display);
+  font-family: 'Perandory Condensed', Georgia, serif !important;
   font-weight: 400;
   letter-spacing: -0.02em;
   line-height: 1.0;

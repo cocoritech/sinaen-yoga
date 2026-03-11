@@ -202,7 +202,7 @@ export default function Home() {
             {
               num: '02',
               title: 'Live Classes',
-              desc: 'Sessions en direct chaque semaine. Une heure ensemble, en vrai. Inclus dans l'abonnement.',
+              desc: "Sessions en direct chaque semaine. Une heure ensemble, en vrai. Inclus dans l'abonnement.",
               color: 'var(--abricot)',
               accent: 'var(--cream)',
               href: '/lives',
