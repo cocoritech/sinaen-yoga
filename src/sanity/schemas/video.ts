@@ -1,0 +1,30 @@
+export default {
+  name: 'video',
+  title: 'Vidéo',
+  type: 'document',
+  fields: [
+    { name: 'title', title: 'Titre', type: 'string', validation: (R: any) => R.required() },
+    { name: 'slug', title: 'Slug', type: 'slug', options: { source: 'title' }, validation: (R: any) => R.required() },
+    { name: 'thumbnail', title: 'Miniature', type: 'image', options: { hotspot: true } },
+    {
+      name: 'category',
+      title: 'Catégorie',
+      type: 'string',
+      options: { list: ['flow', 'mobilite', 'breathwork', 'recovery'] },
+      validation: (R: any) => R.required(),
+    },
+    {
+      name: 'intensity',
+      title: 'Intensité',
+      type: 'string',
+      options: { list: ['doux', 'moyen', 'fort'] },
+    },
+    { name: 'duration', title: 'Durée (minutes)', type: 'number' },
+    { name: 'vimeoId', title: 'ID Vimeo', type: 'string' },
+    { name: 'description', title: 'Description', type: 'text' },
+    { name: 'isNew', title: 'Nouveau ?', type: 'boolean', initialValue: false },
+    { name: 'publishedAt', title: 'Date de publication', type: 'datetime' },
+  ],
+  orderings: [{ title: 'Date (récent)', name: 'publishedAtDesc', by: [{ field: 'publishedAt', direction: 'desc' }] }],
+  preview: { select: { title: 'title', subtitle: 'category', media: 'thumbnail' } },
+};

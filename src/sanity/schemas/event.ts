@@ -1,0 +1,25 @@
+export default {
+  name: 'event',
+  title: 'Expérience IRL',
+  type: 'document',
+  fields: [
+    { name: 'title', title: 'Titre', type: 'string', validation: (R: any) => R.required() },
+    { name: 'subtitle', title: 'Sous-titre', type: 'string' },
+    {
+      name: 'type',
+      title: 'Type',
+      type: 'string',
+      options: { list: ['Retraite', 'Atelier'] },
+    },
+    { name: 'coverImage', title: 'Image', type: 'image', options: { hotspot: true } },
+    { name: 'startDate', title: 'Date de début', type: 'datetime' },
+    { name: 'endDate', title: 'Date de fin', type: 'datetime' },
+    { name: 'location', title: 'Lieu', type: 'string' },
+    { name: 'price', title: 'Prix (€)', type: 'number' },
+    { name: 'spots', title: 'Nombre de places total', type: 'number' },
+    { name: 'description', title: 'Description', type: 'text' },
+    { name: 'includes', title: "Ce qui est inclus", type: 'array', of: [{ type: 'string' }] },
+    { name: 'stripeLink', title: 'Lien Stripe', type: 'url' },
+  ],
+  preview: { select: { title: 'title', subtitle: 'location', media: 'coverImage' } },
+};
