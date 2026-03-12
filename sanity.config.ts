@@ -6,8 +6,8 @@ import { schemaTypes } from './src/sanity/schemas';
 export default defineConfig({
   name: 'sinaen',
   title: 'Sinaen Studio',
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET ?? 'production',
+  projectId: '07qu1pfg',
+  dataset: 'production',
   plugins: [structureTool(), visionTool()],
   schema: { types: schemaTypes },
 });
