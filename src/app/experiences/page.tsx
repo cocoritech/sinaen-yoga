@@ -1,71 +1,10 @@
-'use client';
-
 import Nav from '@/components/layout/Nav';
 import Link from 'next/link';
-import { useState } from 'react';
+import { client } from '@/lib/sanity';
+import { eventsQuery } from '@/lib/queries';
+import { urlFor } from '@/lib/sanity';
 
-const EVENTS = [
-  {
-    id: 1,
-    type: 'Retraite',
-    title: 'Retraite Printemps',
-    subtitle: 'Yoga & Reconnexion',
-    date: '25 – 27 avril 2025',
-    location: 'Luberon, Provence',
-    price: 490,
-    spots: 12,
-    spotsLeft: 4,
-    duration: '3 jours',
-    color: 'var(--pistache)',
-    description: "Un weekend immersif dans les collines du Luberon. Yoga matin et soir, breathwork, repas végétariens partagés, temps libre en nature.",
-    includes: ['Hébergement', 'Repas inclus', '6 sessions', 'Cercle de partage'],
-  },
-  {
-    id: 2,
-    type: 'Atelier',
-    title: 'Atelier Mobilité',
-    subtitle: 'Hanches & Colonne',
-    date: '12 avril 2025',
-    location: 'Paris 11ème',
-    price: 65,
-    spots: 15,
-    spotsLeft: 11,
-    duration: '3h',
-    color: 'var(--abricot)',
-    description: "Un atelier intensif centré sur la libération des hanches et la mobilité de la colonne vertébrale. Idéal si tu passes beaucoup de temps assis.",
-    includes: ['Tapis fourni', 'Support PDF', 'Replay 48h'],
-  },
-  {
-    id: 3,
-    type: 'Retraite',
-    title: 'Retraite Été',
-    subtitle: 'Mer & Slow Living',
-    date: '18 – 22 juillet 2025',
-    location: 'Corse du Sud',
-    price: 890,
-    spots: 10,
-    spotsLeft: 10,
-    duration: '5 jours',
-    color: 'var(--blush)',
-    description: "Cinq jours face à la mer. Pratique quotidienne, baignades, soirées sous les étoiles. Une parenthèse pour recharger vraiment.",
-    includes: ['Villa privée', 'Pension complète', '8 sessions', 'Excursion bateau'],
-  },
-  {
-    id: 4,
-    type: 'Atelier',
-    title: 'Breathwork Collectif',
-    subtitle: 'Libération & Énergie',
-    date: '3 mai 2025',
-    location: 'Paris 3ème',
-    price: 45,
-    spots: 20,
-    spotsLeft: 17,
-    duration: '2h',
-    color: 'var(--rose-sorbet)',
-    description: "Une session de breathwork en groupe guidée par Sinaen. Technique holotropique douce, intégration en cercle, musique live.",
-    includes: ['Matelas fourni', 'Boisson chaude', 'Intégration guidée'],
-  },
-];
+export const revalidate = 60;
 
 const FAQ = [
   {
@@ -86,9 +25,24 @@ const FAQ = [
   },
 ];
 
-export default function Experiences() {
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [selectedEvent, setSelectedEvent] = useState<number | null>(null);
+const eventColors: Record<string, string> = {
+  Retraite: 'var(--pistache)',
+  Atelier: 'var(--abricot)',
+};
+
+function formatEventDate(startDate: string, endDate?: string) {
+  const d = new Date(startDate);
+  const months = ['jan', 'fév', 'mars', 'avr', 'mai', 'juin', 'juil', 'août', 'sep', 'oct', 'nov', 'déc'];
+  if (!endDate) return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+  const e = new Date(endDate);
+  if (d.getMonth() === e.getMonth()) {
+    return `${d.getDate()} – ${e.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+  }
+  return `${d.getDate()} ${months[d.getMonth()]} – ${e.getDate()} ${months[e.getMonth()]} ${d.getFullYear()}`;
+}
+
+export default async function Experiences() {
+  const events = await client.fetch(eventsQuery);
 
   return (
     <div className="grain">
@@ -176,211 +130,222 @@ export default function Experiences() {
           Prochains événements
         </p>
         <h2 style={{ color: 'var(--deep)', marginBottom: '3rem' }}>
-          Agenda 2025
+          Agenda
         </h2>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          {EVENTS.map((e) => (
-            <div
-              key={e.id}
-              style={{
-                borderRadius: 'var(--radius-lg)',
-                overflow: 'hidden',
-                border: '1.5px solid var(--blush)',
-                background: 'var(--white)',
-              }}
-            >
-              {/* Card principale */}
-              <div
-                className="grid-event" style={{
-                  alignItems: 'center',
-                }}
-              >
-                {/* Visuel */}
+        {events.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '4rem', opacity: 0.4 }}>
+            <p style={{ fontFamily: 'var(--font-body)' }}>
+              Les prochains événements arrivent bientôt ✦
+            </p>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            {events.map((e: any) => {
+              const color = eventColors[e.type] ?? 'var(--blush)';
+              const dateStr = formatEventDate(e.startDate, e.endDate);
+
+              return (
                 <div
+                  key={e._id}
                   style={{
-                    aspectRatio: '4/3',
-                    background: e.color,
-                    display: 'flex',
-                    alignItems: 'flex-end',
-                    padding: '1.5rem',
+                    borderRadius: 'var(--radius-lg)',
+                    overflow: 'hidden',
+                    border: '1.5px solid var(--blush)',
+                    background: 'var(--white)',
                   }}
                 >
-                  <div>
-                    <span
+                  <div className="grid-event" style={{ alignItems: 'center' }}>
+                    {/* Visuel */}
+                    <div
                       style={{
-                        display: 'inline-block',
-                        background: 'rgba(26,20,16,0.2)',
-                        borderRadius: 'var(--radius-full)',
-                        padding: '0.2rem 0.75rem',
-                        fontSize: '0.7rem',
-                        letterSpacing: '0.1em',
-                        color: 'var(--deep)',
-                        marginBottom: '0.5rem',
-                        fontFamily: 'var(--font-body)',
+                        aspectRatio: '4/3',
+                        background: e.coverImage
+                          ? `url(${urlFor(e.coverImage).width(500).url()}) center/cover`
+                          : color,
+                        display: 'flex',
+                        alignItems: 'flex-end',
+                        padding: '1.5rem',
                       }}
                     >
-                      {e.type.toUpperCase()}
-                    </span>
-                    <p
-                      style={{
-                        fontFamily: "'Perandory Condensed', Georgia, serif",
-                        fontSize: '1.6rem',
-                        color: 'var(--deep)',
-                        lineHeight: 1,
-                      }}
-                    >
-                      {e.title}
-                    </p>
-                  </div>
-                </div>
+                      <div>
+                        <span
+                          style={{
+                            display: 'inline-block',
+                            background: 'rgba(26,20,16,0.2)',
+                            borderRadius: 'var(--radius-full)',
+                            padding: '0.2rem 0.75rem',
+                            fontSize: '0.7rem',
+                            letterSpacing: '0.1em',
+                            color: 'var(--deep)',
+                            marginBottom: '0.5rem',
+                            fontFamily: 'var(--font-body)',
+                          }}
+                        >
+                          {e.type?.toUpperCase()}
+                        </span>
+                        <p
+                          style={{
+                            fontFamily: "'Perandory Condensed', Georgia, serif",
+                            fontSize: '1.6rem',
+                            color: 'var(--deep)',
+                            lineHeight: 1,
+                          }}
+                        >
+                          {e.title}
+                        </p>
+                      </div>
+                    </div>
 
-                {/* Infos */}
-                <div style={{ padding: '2rem 0' }}>
-                  <p
-                    style={{
-                      fontFamily: "'Perandory Condensed', Georgia, serif",
-                      fontSize: '1.8rem',
-                      color: 'var(--deep)',
-                      marginBottom: '0.25rem',
-                    }}
-                  >
-                    {e.title}
-                    <span
-                      style={{
-                        fontFamily: 'var(--font-body)',
-                        fontSize: '1rem',
-                        color: 'var(--deep)',
-                        opacity: 0.5,
-                        marginLeft: '0.75rem',
-                      }}
-                    >
-                      — {e.subtitle}
-                    </span>
-                  </p>
-
-                  <div
-                    style={{
-                      display: 'flex',
-                      gap: '1.5rem',
-                      marginBottom: '1rem',
-                      flexWrap: 'wrap',
-                    }}
-                  >
-                    {[
-                      { icon: '📅', text: e.date },
-                      { icon: '📍', text: e.location },
-                      { icon: '⏱', text: e.duration },
-                    ].map((info) => (
-                      <span
-                        key={info.text}
+                    {/* Infos */}
+                    <div style={{ padding: '2rem 0' }}>
+                      <p
                         style={{
-                          fontSize: '0.85rem',
+                          fontFamily: "'Perandory Condensed', Georgia, serif",
+                          fontSize: '1.8rem',
                           color: 'var(--deep)',
-                          opacity: 0.6,
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '0.3rem',
+                          marginBottom: '0.25rem',
                         }}
                       >
-                        {info.icon} {info.text}
-                      </span>
-                    ))}
-                  </div>
+                        {e.title}
+                        {e.subtitle && (
+                          <span
+                            style={{
+                              fontFamily: 'var(--font-body)',
+                              fontSize: '1rem',
+                              color: 'var(--deep)',
+                              opacity: 0.5,
+                              marginLeft: '0.75rem',
+                            }}
+                          >
+                            — {e.subtitle}
+                          </span>
+                        )}
+                      </p>
 
-                  <p style={{ fontSize: '0.9rem', color: 'var(--deep)', opacity: 0.7, lineHeight: 1.7, maxWidth: '500px' }}>
-                    {e.description}
-                  </p>
-
-                  <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem', flexWrap: 'wrap' }}>
-                    {e.includes.map((inc) => (
-                      <span
-                        key={inc}
+                      <div
                         style={{
-                          fontSize: '0.75rem',
-                          padding: '0.2rem 0.75rem',
-                          background: 'var(--blush)',
-                          borderRadius: 'var(--radius-full)',
-                          color: 'var(--brique)',
-                          fontFamily: 'var(--font-body)',
+                          display: 'flex',
+                          gap: '1.5rem',
+                          marginBottom: '1rem',
+                          flexWrap: 'wrap',
                         }}
                       >
-                        {inc}
-                      </span>
-                    ))}
-                  </div>
-                </div>
+                        {[
+                          { icon: '📅', text: dateStr },
+                          e.location && { icon: '📍', text: e.location },
+                        ].filter(Boolean).map((info: any) => (
+                          <span
+                            key={info.text}
+                            style={{
+                              fontSize: '0.85rem',
+                              color: 'var(--deep)',
+                              opacity: 0.6,
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '0.3rem',
+                            }}
+                          >
+                            {info.icon} {info.text}
+                          </span>
+                        ))}
+                      </div>
 
-                {/* Prix + CTA */}
-                <div
-                  style={{
-                    padding: '2rem',
-                    textAlign: 'right',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'flex-end',
-                    gap: '0.75rem',
-                    minWidth: '180px',
-                  }}
-                >
-                  <div>
-                    <p
+                      {e.description && (
+                        <p style={{ fontSize: '0.9rem', color: 'var(--deep)', opacity: 0.7, lineHeight: 1.7, maxWidth: '500px' }}>
+                          {e.description}
+                        </p>
+                      )}
+
+                      {e.includes?.length > 0 && (
+                        <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem', flexWrap: 'wrap' }}>
+                          {e.includes.map((inc: string) => (
+                            <span
+                              key={inc}
+                              style={{
+                                fontSize: '0.75rem',
+                                padding: '0.2rem 0.75rem',
+                                background: 'var(--blush)',
+                                borderRadius: 'var(--radius-full)',
+                                color: 'var(--brique)',
+                                fontFamily: 'var(--font-body)',
+                              }}
+                            >
+                              {inc}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Prix + CTA */}
+                    <div
                       style={{
-                        fontFamily: "'Perandory Condensed', Georgia, serif",
-                        fontSize: '2.5rem',
-                        color: 'var(--brique)',
-                        lineHeight: 1,
+                        padding: '2rem',
+                        textAlign: 'right',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'flex-end',
+                        gap: '0.75rem',
+                        minWidth: '180px',
                       }}
                     >
-                      {e.price}€
-                    </p>
-                    {e.price >= 100 && (
-                      <p style={{ fontSize: '0.7rem', color: 'var(--deep)', opacity: 0.4 }}>
-                        ou 3× {Math.round(e.price / 3)}€
-                      </p>
-                    )}
+                      {e.price && (
+                        <div>
+                          <p
+                            style={{
+                              fontFamily: "'Perandory Condensed', Georgia, serif",
+                              fontSize: '2.5rem',
+                              color: 'var(--brique)',
+                              lineHeight: 1,
+                            }}
+                          >
+                            {e.price}€
+                          </p>
+                          {e.price >= 100 && (
+                            <p style={{ fontSize: '0.7rem', color: 'var(--deep)', opacity: 0.4 }}>
+                              ou 3× {Math.round(e.price / 3)}€
+                            </p>
+                          )}
+                        </div>
+                      )}
+
+                      {e.spots && (
+                        <p style={{ fontSize: '0.75rem', color: 'var(--deep)', opacity: 0.4 }}>
+                          {e.spots} place{e.spots > 1 ? 's' : ''}
+                        </p>
+                      )}
+
+                      <a
+                        href={e.stripeLink ?? '#'}
+                        target={e.stripeLink ? '_blank' : undefined}
+                        rel="noopener noreferrer"
+                        style={{
+                          display: 'inline-block',
+                          padding: '0.75rem 1.75rem',
+                          background: 'var(--brique)',
+                          color: 'var(--blush)',
+                          border: 'none',
+                          borderRadius: 'var(--radius-full)',
+                          fontFamily: 'var(--font-body)',
+                          fontSize: '0.85rem',
+                          letterSpacing: '0.05em',
+                          cursor: 'pointer',
+                          width: '100%',
+                          textAlign: 'center',
+                          textDecoration: 'none',
+                          boxSizing: 'border-box',
+                        }}
+                      >
+                        Réserver
+                      </a>
+                    </div>
                   </div>
-
-                  <p style={{ fontSize: '0.75rem', color: 'var(--deep)', opacity: 0.4 }}>
-                    {e.spotsLeft} place{e.spotsLeft > 1 ? 's' : ''} restante{e.spotsLeft > 1 ? 's' : ''}
-                  </p>
-
-                  <button
-                    style={{
-                      padding: '0.75rem 1.75rem',
-                      background: 'var(--brique)',
-                      color: 'var(--blush)',
-                      border: 'none',
-                      borderRadius: 'var(--radius-full)',
-                      fontFamily: 'var(--font-body)',
-                      fontSize: '0.85rem',
-                      letterSpacing: '0.05em',
-                      cursor: 'pointer',
-                      width: '100%',
-                    }}
-                  >
-                    Réserver
-                  </button>
-
-                  <button
-                    onClick={() => setSelectedEvent(selectedEvent === e.id ? null : e.id)}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      fontSize: '0.75rem',
-                      color: 'var(--deep)',
-                      opacity: 0.4,
-                      cursor: 'pointer',
-                      textDecoration: 'underline',
-                    }}
-                  >
-                    {selectedEvent === e.id ? 'Moins de détails' : 'Plus de détails'}
-                  </button>
                 </div>
-              </div>
-            </div>
-          ))}
-        </div>
+              );
+            })}
+          </div>
+        )}
       </section>
 
       {/* ── GALERIE ───────────────────────────────────────────────── */}
@@ -457,7 +422,7 @@ export default function Experiences() {
 
         <div style={{ maxWidth: '720px', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
           {FAQ.map((item, i) => (
-            <div
+            <details
               key={i}
               style={{
                 borderRadius: 'var(--radius-md)',
@@ -465,13 +430,11 @@ export default function Experiences() {
                 overflow: 'hidden',
               }}
             >
-              <button
-                onClick={() => setOpenFaq(openFaq === i ? null : i)}
+              <summary
                 style={{
                   width: '100%',
                   padding: '1.25rem 1.5rem',
-                  background: openFaq === i ? 'var(--blush)' : 'var(--white)',
-                  border: 'none',
+                  background: 'var(--white)',
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
@@ -481,30 +444,26 @@ export default function Experiences() {
                   color: 'var(--brique)',
                   textAlign: 'left',
                   gap: '1rem',
-                  transition: 'background 0.2s',
+                  listStyle: 'none',
                 }}
               >
                 {item.q}
-                <span style={{ fontSize: '1rem', flexShrink: 0 }}>
-                  {openFaq === i ? '−' : '+'}
-                </span>
-              </button>
-              {openFaq === i && (
-                <div
-                  style={{
-                    padding: '1.25rem 1.5rem',
-                    background: 'var(--white)',
-                    borderTop: '1px solid var(--blush)',
-                    fontSize: '0.9rem',
-                    lineHeight: 1.8,
-                    color: 'var(--deep)',
-                    opacity: 0.8,
-                  }}
-                >
-                  {item.a}
-                </div>
-              )}
-            </div>
+                <span style={{ fontSize: '1rem', flexShrink: 0 }}>+</span>
+              </summary>
+              <div
+                style={{
+                  padding: '1.25rem 1.5rem',
+                  background: 'var(--white)',
+                  borderTop: '1px solid var(--blush)',
+                  fontSize: '0.9rem',
+                  lineHeight: 1.8,
+                  color: 'var(--deep)',
+                  opacity: 0.8,
+                }}
+              >
+                {item.a}
+              </div>
+            </details>
           ))}
         </div>
       </section>

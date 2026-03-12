@@ -1,107 +1,104 @@
 import Nav from '@/components/layout/Nav';
 import Link from 'next/link';
+import { client, urlFor } from '@/lib/sanity';
+import { articleBySlugQuery, articleSlugsQuery } from '@/lib/queries';
+import { notFound } from 'next/navigation';
 
-const ARTICLES: Record<string, {
-  title: string; category: string; date: string; readTime: string;
-  color: string; content: string[]; tagLabel: string; tagHref: string;
-}> = {
-  '1': {
-    title: "Pourquoi la régularité bat toujours l'intensité",
-    category: 'Movement', date: '3 mars 2025', readTime: '5 min',
-    color: 'var(--abricot)',
-    tagLabel: 'Studio →', tagHref: '/bibliotheque',
-    content: [
-      "On nous a vendu l'idée que plus c'est intense, mieux c'est. Que la douleur est un signe de progrès. Que si tu ne transpires pas, tu n'as pas vraiment travaillé.",
-      "C'est faux. Et cette croyance fait plus de mal que de bien.",
-      "Le corps humain ne fonctionne pas par pics d'intensité. Il fonctionne par adaptation progressive. Chaque fois que tu pratiques — même 15 minutes, même doucement — tu envoies un signal à ton système nerveux : ce mouvement est important, il fait partie de ma vie.",
-      "C'est l'accumulation de ces signaux, jour après jour, qui crée le changement. Pas la session épuisante du samedi qui te laisse sur le canapé tout le dimanche.",
-      "La régularité crée de la prévisibilité pour le corps. Et le corps adore la prévisibilité. Il commence à anticiper, à préparer, à s'adapter. C'est là que la vraie transformation opère.",
-      "Alors si tu hésites entre une heure intense une fois par semaine et 20 minutes douces cinq fois par semaine : choisis les 20 minutes. Toujours.",
-    ],
-  },
-  '2': {
-    title: "Breathwork : ce que la respiration peut faire pour ton système nerveux",
-    category: 'Mental Health', date: '24 fév 2025', readTime: '7 min',
-    color: 'var(--blush)',
-    tagLabel: 'Sounds →', tagHref: '/sounds',
-    content: [
-      "La respiration est le seul système autonome que tu peux contrôler consciemment. C'est une porte d'entrée directe vers ton système nerveux.",
-      "Quand tu es stressée, ta respiration devient rapide et superficielle. Quand tu ralentis consciemment ta respiration, tu envoies un signal inverse au cerveau : tout va bien, on peut se calmer.",
-      "Ce n'est pas de la magie. C'est de la biologie. Le nerf vague — qui relie le cerveau aux organes — est directement stimulé par une respiration lente et profonde. Il active la réponse parasympathique : le mode récupération, digestion, repos.",
-      "Le breathwork, c'est utiliser ce mécanisme de façon intentionnelle. Que ce soit la cohérence cardiaque (5 secondes inspire, 5 secondes expire), la respiration 4-7-8, ou des techniques plus avancées comme le pranayama : toutes agissent sur ce même axe.",
-      "Commencer par 5 minutes par jour suffit. Le matin, avant de regarder ton téléphone. Ou le soir, pour signaler à ton corps que la journée est terminée.",
-    ],
-  },
-  '3': {
-    title: "Ce que j'ai appris à Bali sur le mouvement holistique",
-    category: 'Lifestyle', date: '12 fév 2025', readTime: '6 min',
-    color: 'var(--pistache)',
-    tagLabel: 'About →', tagHref: '/about',
-    content: [
-      "Trois mois à Ubud. C'est long et court à la fois. Long pour désapprendre. Court pour tout absorber.",
-      "Ce qui m'a le plus frappée là-bas, c'est que personne ne sépare le corps du reste. La pratique physique n'est jamais juste physique. Elle est toujours reliée à l'énergie, aux émotions, au souffle, à la communauté.",
-      "En Occident, on fait du sport pour brûler des calories ou pour 'déstresser'. À Bali, on bouge pour se connecter. À soi, aux autres, à quelque chose de plus grand.",
-      "J'ai appris à ralentir. À rester dans une posture pas parce qu'elle est difficile, mais pour voir ce qu'elle révèle. Quelle résistance. Quelle émotion. Quelle histoire le corps raconte.",
-      "C'est cette vision que j'ai ramenée avec moi et qui guide tout ce que je propose aujourd'hui. Bouger n'est pas une performance. C'est une conversation.",
-    ],
-  },
-  '4': {
-    title: "Mobilité vs flexibilité : arrêtons la confusion",
-    category: 'Movement', date: '1 fév 2025', readTime: '4 min',
-    color: 'var(--rose-sorbet)',
-    tagLabel: 'Lives →', tagHref: '/lives',
-    content: [
-      "La flexibilité, c'est la capacité d'un muscle à s'étirer passivement. On te pousse dans la posture, tu tiens, tu respires.",
-      "La mobilité, c'est différent. C'est la capacité à bouger activement dans toute ton amplitude articulaire. C'est toi qui contrôles le mouvement, avec de la force.",
-      "Pourquoi c'est important ? Parce qu'une personne très flexible mais peu mobile est en réalité vulnérable. Elle peut aller loin dans une posture, mais elle n'a pas la force musculaire pour protéger cette amplitude. C'est là que les blessures arrivent.",
-      "Le pilates et le yoga fonctionnel travaillent les deux. Mais si tu dois choisir sur quoi te concentrer, choisis la mobilité. Elle te donnera de la flexibilité en bonus, et en plus elle protégera tes articulations.",
-      "Tes hanches, tes épaules, ta colonne : ces zones méritent d'être fortes dans toute leur amplitude. Pas juste souples.",
-    ],
-  },
-  '5': {
-    title: "Comment j'ai reconstruit ma relation au corps après une blessure",
-    category: 'Mental Health', date: '20 jan 2025', readTime: '8 min',
-    color: 'var(--brique)',
-    tagLabel: 'Expériences →', tagHref: '/experiences',
-    content: [
-      "J'avais 28 ans. Professeure de yoga depuis deux ans. Et un matin, je me suis réveillée avec une douleur dans le bas du dos que je ne pouvais plus ignorer.",
-      "Le diagnostic : hernie discale L4-L5. Repos complet. Pas de yoga pendant 3 mois.",
-      "Ces trois mois ont été parmi les plus difficiles de ma vie professionnelle. Mais aussi les plus transformateurs.",
-      "J'ai dû apprendre à écouter mon corps autrement. Pas pour le pousser. Pas pour performer. Juste pour comprendre ce qu'il demandait.",
-      "J'ai découvert que ma pratique avait été, sans que je m'en rende compte, une forme de contrôle. Et la blessure m'a obligée à lâcher ce contrôle.",
-      "Quand je suis revenue sur le tapis, tout avait changé. Ma façon de bouger, ma façon d'enseigner, ma façon de parler du corps. Cette blessure est devenue le fondement de tout ce que je propose aujourd'hui.",
-    ],
-  },
-  '6': {
-    title: "Ma routine matinale en 20 minutes (et pourquoi elle fonctionne)",
-    category: 'Lifestyle', date: '8 jan 2025', readTime: '3 min',
-    color: 'var(--pistache)',
-    tagLabel: 'Studio →', tagHref: '/bibliotheque',
-    content: [
-      "Je ne suis pas une personne du matin. Je l'ai longtemps cru, en tout cas.",
-      "Ce qui a tout changé : arrêter de vouloir faire trop. Une heure de pratique le matin, c'est beau sur Instagram. Dans la vraie vie, avec un boulot et une vie sociale, c'est rarement tenable.",
-      "20 minutes, en revanche, c'est possible presque tous les jours.",
-      "Ma routine : 5 minutes de mobilité articulaire (chevilles, hanches, épaules). 10 minutes de flow debout, sans objectif particulier. 5 minutes de respiration et d'intention.",
-      "C'est tout. Ça n'a rien d'impressionnant. Et c'est exactement pour ça que ça fonctionne.",
-      "Le cerveau n'a pas besoin d'être convaincu. Le seuil d'entrée est bas. Et une fois que tu es là, sur ton tapis, tu fais toujours plus que prévu.",
-    ],
-  },
+export const revalidate = 60;
+
+export async function generateStaticParams() {
+  const slugs: { slug: string }[] = await client.fetch(articleSlugsQuery);
+  return slugs.map((s) => ({ id: s.slug }));
+}
+
+const categoryColors: Record<string, string> = {
+  movement: 'var(--abricot)',
+  'mental-health': 'var(--blush)',
+  lifestyle: 'var(--pistache)',
 };
 
-export default function ArticlePage({ params }: { params: { id: string } }) {
-  const article = ARTICLES[params.id];
+const categoryLabels: Record<string, string> = {
+  movement: 'Movement',
+  'mental-health': 'Mental Health',
+  lifestyle: 'Lifestyle',
+};
 
-  if (!article) {
-    return (
-      <div className="grain">
-        <Nav />
-        <section style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '2rem', paddingTop: '6rem' }}>
-          <h1 style={{ color: 'var(--brique)' }}>Article introuvable</h1>
-          <Link href="/blog" style={{ color: 'var(--abricot)', textDecoration: 'none' }}>← Retour au blog</Link>
-        </section>
-      </div>
-    );
-  }
+function formatDate(iso: string) {
+  const d = new Date(iso);
+  const months = ['jan', 'fév', 'mars', 'avr', 'mai', 'juin', 'juil', 'août', 'sep', 'oct', 'nov', 'déc'];
+  return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+function renderBody(body: any[]) {
+  if (!body?.length) return null;
+  return body.map((block: any, i: number) => {
+    if (block._type === 'block') {
+      const text = block.children?.map((child: any) => child.text).join('') ?? '';
+      if (!text) return null;
+      if (block.style === 'h2') {
+        return (
+          <h2
+            key={i}
+            style={{
+              fontSize: '1.6rem',
+              color: 'var(--deep)',
+              marginTop: '1rem',
+              lineHeight: 1.2,
+            }}
+          >
+            {text}
+          </h2>
+        );
+      }
+      if (block.style === 'h3') {
+        return (
+          <h3
+            key={i}
+            style={{
+              fontSize: '1.2rem',
+              color: 'var(--deep)',
+              marginTop: '0.75rem',
+            }}
+          >
+            {text}
+          </h3>
+        );
+      }
+      return (
+        <p
+          key={i}
+          style={{
+            fontSize: i === 0 ? '1.15rem' : '1rem',
+            lineHeight: 1.9,
+            color: 'var(--deep)',
+            opacity: i === 0 ? 0.85 : 0.7,
+          }}
+        >
+          {text}
+        </p>
+      );
+    }
+    if (block._type === 'image' && block.asset) {
+      return (
+        <img
+          key={i}
+          src={urlFor(block).width(680).url()}
+          alt=""
+          style={{ width: '100%', borderRadius: 'var(--radius-md)', margin: '1rem 0' }}
+        />
+      );
+    }
+    return null;
+  });
+}
+
+export default async function ArticlePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const article = await client.fetch(articleBySlugQuery, { slug: id });
+
+  if (!article) notFound();
+
+  const color = categoryColors[article.category] ?? 'var(--abricot)';
 
   return (
     <div className="grain">
@@ -114,7 +111,9 @@ export default function ArticlePage({ params }: { params: { id: string } }) {
           paddingBottom: '4rem',
           paddingLeft: '2rem',
           paddingRight: '2rem',
-          background: article.color,
+          background: article.coverImage
+            ? `linear-gradient(rgba(255,255,255,0.6), rgba(255,255,255,0.6)), url(${urlFor(article.coverImage).width(1200).url()}) center/cover`
+            : color,
         }}
       >
         <Link
@@ -137,11 +136,13 @@ export default function ArticlePage({ params }: { params: { id: string } }) {
 
         <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
           <span style={{ fontSize: '0.75rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--deep)', opacity: 0.5, fontFamily: 'var(--font-body)' }}>
-            {article.category}
+            {categoryLabels[article.category] ?? article.category}
           </span>
-          <span style={{ fontSize: '0.75rem', color: 'var(--deep)', opacity: 0.35, fontFamily: 'var(--font-body)' }}>
-            {article.date} · {article.readTime} de lecture
-          </span>
+          {article.publishedAt && (
+            <span style={{ fontSize: '0.75rem', color: 'var(--deep)', opacity: 0.35, fontFamily: 'var(--font-body)' }}>
+              {formatDate(article.publishedAt)}
+            </span>
+          )}
         </div>
 
         <h1
@@ -164,22 +165,30 @@ export default function ArticlePage({ params }: { params: { id: string } }) {
         }}
       >
         <div style={{ maxWidth: '680px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
-          {article.content.map((para, i) => (
+          {article.excerpt && (
             <p
-              key={i}
               style={{
-                fontSize: i === 0 ? '1.2rem' : '1rem',
-                lineHeight: 1.9,
+                fontSize: '1.2rem',
+                lineHeight: 1.8,
                 color: 'var(--deep)',
-                opacity: i === 0 ? 0.85 : 0.7,
-                fontWeight: i === 0 ? 500 : 400,
+                opacity: 0.75,
+                fontWeight: 500,
+                fontStyle: 'italic',
               }}
             >
-              {para}
+              {article.excerpt}
             </p>
-          ))}
+          )}
 
-          {/* CTA lié */}
+          {article.body?.length > 0 ? (
+            renderBody(article.body)
+          ) : (
+            <p style={{ opacity: 0.4, fontFamily: 'var(--font-body)' }}>
+              Contenu en cours de rédaction…
+            </p>
+          )}
+
+          {/* CTA */}
           <div
             style={{
               marginTop: '2rem',
@@ -197,7 +206,7 @@ export default function ArticlePage({ params }: { params: { id: string } }) {
               Envie de passer à la pratique ?
             </p>
             <Link
-              href={article.tagHref}
+              href="/bibliotheque"
               style={{
                 padding: '0.75rem 2rem',
                 background: 'var(--brique)',
@@ -209,7 +218,7 @@ export default function ArticlePage({ params }: { params: { id: string } }) {
                 whiteSpace: 'nowrap',
               }}
             >
-              {article.tagLabel}
+              Studio →
             </Link>
           </div>
         </div>
