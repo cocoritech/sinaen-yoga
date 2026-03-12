@@ -71,3 +71,24 @@ export const articleBySlugQuery = `*[_type == "article" && slug.current == $slug
 export const articleSlugsQuery = `*[_type == "article" && defined(slug.current)] {
   "slug": slug.current
 }`;
+
+export const playlistsQuery = `*[_type == "playlist"] | order(order asc) {
+  _id,
+  name,
+  mood,
+  description,
+  tracks,
+  duration,
+  spotifyUrl,
+  coverImage,
+  color
+}`;
+
+export const meditationsQuery = `*[_type == "meditation"] | order(order asc) {
+  _id,
+  title,
+  category,
+  duration,
+  "audioUrl": coalesce(audioFile.asset->url, audioUrl),
+  color
+}`;
